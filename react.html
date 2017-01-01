@@ -14,7 +14,7 @@
 
     <script type="text/babel">
 
-      var logMixin ={
+      var logMixin = {
         //mixin is a js object that contains a collection of methods and properties
         // a mixin is meant not to be used on its own but included into another
         //objects properties.
@@ -25,20 +25,41 @@
         //these lifecycle methods are used for listening tpo changes in your 
         //component.
         componentWillUpdate: function(){this._log('componentWillUpdate', arguments);},
-        componentDidUpdate: function(oldProps, oldState){
-          if (this.state.name.length > 10) {
-            this.replaceState(oldState);
-          }},
+        componentDidUpdate: function() {this._log('componentDidUpdate', arguments);},
+
+        //function(oldProps, oldState){
+        //  if (this.state.name.length > 10) {
+        //    this.replaceState(oldState);
+        //  }},
         componentWillMount: function(){this._log('componentWillMount', arguments);},
         componentDidMount: function(){this._log('componentDidMount', arguments);},
         componentWillUnmount: function(){this._log('componentWillUnmount', arguments);},
         };
 
 
+      var Counter = React.createClass({
+        //this is a child component. 
+        //This component will be inside our textCounter component
+        //This is where our counter will be stored. 
+        name:'Counter',
+        //mixins: [logMixin], //since this is added it will call lifecycle methods
+                            //everytime there is a change in the component
+
+        propTypes: {
+          count: React.PropTypes.number.isRequired,
+        },
+
+        render() {
+          console.log(this.name + '::render()'); //render gets printed on console log each time it is invoked
+          return React.DOM.span(null, this.props.count);
+        }
+      });
+
+
       var textCounter = React.createClass({
         //this object will add in the lifecycles properties because of the mixin objec.
         name:'TextCounter',
-        mixins: [logMixin],
+        //mixins: [logMixin],
 
         componentWillReceiveProps: function(newProps) {
           this.setState({
@@ -63,6 +84,8 @@
 
         //Now we will add an event listener called _textChange that takes and event 
         //ev object and reaches into it to get the text of the textarea input.
+        //everytime you press something in the textArea component this eventListener
+        //gets called.
         _textChange: function(ev){
           this.setState({
             name: ev.target.value,
@@ -70,21 +93,32 @@
         },
 
         render: function() {
+          console.log(this.name + ':: render()');
+          var counter = null; //counter is declared null so if it has no
+                              //value there will be no number displayed if the 
+                              //textArea is empty. 
+
+          if(this.state.name.length > 0) {        //if there is a value counter is 
+            counter = React.DOM.h3(null,      //given a different value
+              React.createElement(Counter, {
+                count: this.state.name.length,
+              })
+              );
+          }
+
           return React.DOM.div(null,
-            React.DOM.textarea({ //textarea component
-              value: this.state.name,
-              onChange: this._textChange,
-            }), //reating a default value in our text area
-            React.DOM.h3({ style: { //create our number counter with a little style
-              color: "pink",
-              fontSize: "25px",}
-            }, this.state.name.length,));//get the length to our name property and close div componenet
+            React.DOM.textarea({
+              value: this.state.name,       //this is for the initial value of name
+              onChange: this._textChange,   //event gets triggered
+            }),
+            counter //the value for counter is shown
+            );
       } //render function closing brace
       }); //closed the textCounter class
 
         ReactDOM.render(
           React.createElement(textCounter, {
-            name: "Excelsior",
+            name: 'bob',
           }),
           document.getElementById('comp4'));
 
