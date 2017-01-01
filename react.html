@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <link rel="stylesheet" type="text/css" href="css/reactcss.css">
+    <script src="https://unpkg.com/react@latest/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+
+    <div id="comp4"></div>
+
+    <script type="text/babel">
+
+      var logMixin ={
+        //mixin is a js object that contains a collection of methods and properties
+        // a mixin is meant not to be used on its own but included into another
+        //objects properties.
+        _log: function(methodName, args) {
+          console.log(this.name + '::' + methodName, args);
+        },
+
+        //these lifecycle methods are used for listening tpo changes in your 
+        //component.
+        componentWillUpdate: function(){this._log('componentWillUpdate', arguments);},
+        componentDidUpdate: function(oldProps, oldState){
+          if (this.state.name.length > 10) {
+            this.replaceState(oldState);
+          }},
+        componentWillMount: function(){this._log('componentWillMount', arguments);},
+        componentDidMount: function(){this._log('componentDidMount', arguments);},
+        componentWillUnmount: function(){this._log('componentWillUnmount', arguments);},
+        };
+
+
+      var textCounter = React.createClass({
+        //this object will add in the lifecycles properties because of the mixin objec.
+        name:'TextCounter',
+        mixins: [logMixin],
+
+        componentWillReceiveProps: function(newProps) {
+          this.setState({
+            name: newProps.defaultValue,
+          });
+        },
+
+        propTypes: {
+          name: React.PropTypes.string,
+        },
+
+        //the code below changes our paalication from using stateless components into
+        //stalefu ones. 
+
+        //this method basically just initializes whats in our textarea component.
+        //it will have the same value as the 'name' property.
+        getInitialState: function() {
+          return {
+            name: this.props.name,
+          };
+        },
+
+        //Now we will add an event listener called _textChange that takes and event 
+        //ev object and reaches into it to get the text of the textarea input.
+        _textChange: function(ev){
+          this.setState({
+            name: ev.target.value,
+          });
+        },
+
+        render: function() {
+          return React.DOM.div(null,
+            React.DOM.textarea({ //textarea component
+              value: this.state.name,
+              onChange: this._textChange,
+            }), //reating a default value in our text area
+            React.DOM.h3({ style: { //create our number counter with a little style
+              color: "pink",
+              fontSize: "25px",}
+            }, this.state.name.length,));//get the length to our name property and close div componenet
+      } //render function closing brace
+      }); //closed the textCounter class
+
+        ReactDOM.render(
+          React.createElement(textCounter, {
+            name: "Excelsior",
+          }),
+          document.getElementById('comp4'));
+
+
+    </script>
+  </body>
+</html>
