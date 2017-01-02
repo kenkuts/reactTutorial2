@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="css/reactcss.css">
     <script src="https://unpkg.com/react@latest/dist/react.js"></script>
     <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
+    <script src="https://unpkg.com/react@15/dist/react-with-addons.js"></script> 
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
   </head>
   <body>
@@ -22,7 +23,7 @@
           console.log(this.name + '::' + methodName, args);
         },
 
-        //these lifecycle methods are used for listening tpo changes in your 
+        //these lifecycle methods are used for listening to changes in your 
         //component.
         componentWillUpdate: function(){this._log('componentWillUpdate', arguments);},
         componentDidUpdate: function() {this._log('componentDidUpdate', arguments);},
@@ -42,7 +43,12 @@
         //This component will be inside our textCounter component
         //This is where our counter will be stored. 
         name:'Counter',
-        //mixins: [logMixin], //since this is added it will call lifecycle methods
+        mixins: [React.addons.PureRenderMixin], //this adds a PureRenderMixin which
+        //can call the shouldComponenetUpdate() method. The method will save processing
+        //power if the name added into the component has the same initial value of length. 
+        //This can only be called if you addon the react addon package. 
+        
+        //mixins: [logMixin],//since this is added it will call lifecycle methods
                             //everytime there is a change in the component
 
         propTypes: {
